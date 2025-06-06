@@ -1,4 +1,4 @@
-# Are Recipes High Saturated Fat Rated Higher?
+# Are Recipes High in Saturated Fat Rated Better?
 
 Author: Amy Zhao 
 
