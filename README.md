@@ -279,10 +279,9 @@ The model uses 2 features, both of which are quantitative:
 2. `'n_steps'` (Quantitative): The number of preparation steps required to complete the recipe.
 
 Feature Type Breakdown:
-
-Quantitative features: 2 (`'saturated_fat'`, `'n_steps'`)
-Ordinal features: 0
-Nominal features: 0
+- Quantitative features: 2 (`'saturated_fat'`, `'n_steps'`)
+- Ordinal features: 0
+- Nominal features: 0
 
 #### Encodings and Preprocessing
 Since both features are quantitative, no categorical encoding was necessary. The preprocessing pipeline includes:
