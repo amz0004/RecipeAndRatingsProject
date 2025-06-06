@@ -1,4 +1,4 @@
-# Are Recipes High in Saturated Fat Rated Better?
+# Are Recipes High in Saturated Fat Rated High?
 
 Author: Amy Zhao 
 
@@ -93,7 +93,7 @@ Before conducting any data analyses, I performed the following data cleaning ste
      - This provides a normalized measure of how significant saturated fat is in the overall caloric profile of the recipe.
 
 #### Result
-These are the columns of the resulting cleaned df.
+These are the columns of the resulting cleaned dataframe.
 
 | Column              | Description        |
 | :------------------ | :----------------- |
@@ -148,7 +148,7 @@ The saturated to total fat ratio is heavily skewed toward lower values, with the
 ### Bivariate Analysis
 
 <iframe
-  src="total-fat_vs_mean-rating.html"
+  src="assets/total-fat_vs_mean-rating.html"
   width="800"
   height="600"
   frameborder="0"
@@ -186,3 +186,15 @@ For this section, I investigated the relationship between recipe complexity (num
 The pivot table reveals a clear positive relationship between recipe complexity and saturated fat content. As recipes progress from simple 1-step preparations to more complex 10-step processes, both the mean and median proportion of saturated fat consistently increase from 0.10/0.06 to 0.16/0.14 respectively. This pattern suggests that more elaborate cooking techniques tend to incorporate higher amounts of saturated fats, likely through the use of ingredients like butter, cream, or oil-intensive preparation methods that require multiple steps to properly integrate into the dish.
 
 ## Assessment of Missingness
+
+Three columns in the merged dataset:`'date'`, `'rating'`, and `'review'` contain substantial amounts of missing data, so I will conduct a missingness analysis on the dataframe.
+
+### NMAR Analysis
+
+The missingness of ratings is likely related to the unobserved rating value itself. People who have neutral or negative experiences with recipes may be less motivated to leave a rating compared to those who had very positive or very negative experiences. For example, users who tried a recipe and found it "just okay" (3/5 stars) might not feel compelled to rate it. To potentially make the rating missingness MAR instead of NMAR, I would want to collect data on other engagement metric, such as time spent on recipe page, whether a user bookmarked it, if they printed/saved the recipe. We could potentially explain the rating missingness through observed covariates rather than the unobserved rating value itself this way.
+
+### Missingness Dependency
+
+I examined the missingness of `'rating'` column by testing the dependency of its missingness. I am investigating whether the missingness in the `'rating'` column depends on the column `'prop_sat_fat'`, which is the proportion of saturated fat out of the total calories, or the column `'minutes'`, which is the cooking time of the recipe.
+
+
