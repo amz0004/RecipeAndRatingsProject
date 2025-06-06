@@ -256,12 +256,6 @@ To run the test, I first split the data points into two groups: high saturated f
 Then I shuffled the ratings for 1000 times to collect 1000 simulating mean differences in the two distributions as described in the test statistic. I got a p-value of 0.00000.
 Since the p-value is less than **0.05**, I reject the null hypothesis. There is statistically significant evidence suggesting that recipes higher in saturated fat tend to receive higher ratings than recipes lower in saturated fat.
 
-<iframe
-  src="assets/hypothesis_test_plot.html"
-  width="800"
-  height="600"
-  frameborder="0"
-></iframe>
 ## Framing a Prediction Problem
 
 I plan to predict the average rating of a recipe, which would be a regression problem since I am predicting a continuous numerical value (`'mean_rating'`) that can range from 1.0 to 5.0. The response variable is `'mean_rating'`, which represents the average of all user ratings for a given recipe.
