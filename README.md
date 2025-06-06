@@ -296,4 +296,60 @@ Since both features are quantitative, no categorical encoding was necessary. The
    - No scaling or transformation: Random Forest algorithms are tree-based and don't require feature scaling
 
 #### Model Performance
-The model achieved a Mean Absolute Error (MAE) of 0.4747 on the test set, meaning the predictions are off by approximately 0.47 rating points on average.
+The model achieved a Mean Absolute Error (MAE) of 0.4747 on the test set, meaning the predictions are off by approximately 0.47 rating points on average. An average error of ~0.47 points on a 1-5 rating scale demonstrates the model can provide useful predictions, getting within roughly half a rating point of the true value. Random Forest handles non-linear relationships well and provides robust predictions without overfitting. But while the current 2 features provide a good foundation, incorporating additional recipe characteristics like cooking time, comprehensive nutritional profile, and ingredient diversity could improve predictions. 
+
+## Final Model
+
+#### Feature Engineering and Selection
+
+`'calories'`
+From the data generating process perspective, calories reflect both the indulgence level and practical utility of a recipe. Higher-calorie recipes often contain rich, satisfying ingredients that enhance flavor and create memorable eating experiences, potentially leading to higher ratings. Conversely, health-conscious users may prefer lower-calorie options.
+
+`'minutes'`
+I included cooking time because it directly impacts recipe accessibility and user satisfaction. Recipes requiring excessive preparation time may receive lower ratings due to inconvenience and increased opportunity for cooking errors, especially among novice cooks. Conversely, overly simple recipes might be perceived as lacking sophistication.
+
+`'prop_sat_fat'`
+Instead of using raw saturated fat values, I chose the proportion relative to total calories because it better captures the nutritional richness independent of recipe size. This normalized measure reflects how "indulgent" a recipe is - higher proportions typically indicate the presence of butter, cream, cheese, and other ingredients that enhance flavor.
+
+`'n_steps'`
+The number of preparation steps captures recipe complexity and skill requirements. Recipes with too few steps might be perceived as overly simplistic, while those with excessive steps may intimidate users
+
+#### Modeling Algorithm and Preprocessing
+
+**Random Forest Regressor**: I selected Random Forest because it effectively captures non-linear relationships and interactions between features without requiring strong distributional assumptions. Given that recipe ratings likely depend on complex interactions (e.g., the relationship between cooking time and calories might differ for desserts versus main dishes), Random Forest's ensemble approach provides robust predictions.
+
+**Preprocessing Strategy**:
+   - QuantileTransformer (normal distribution) for `'calories'`, `'minutes'`, and `'prop_sat_fat'`: I observed these features had skewed distributions during EDA, and normalizing them helps the model capture patterns across their entire range more effectively
+   - Log transformation (log1p) for `'n_steps'`: Step counts showed positive skew with some recipes having extremely high step counts; the log transformation reduces the disproportionate influence of overly complex recipes while preserving the relative complexity relationships
+
+**Hyperparameter Selection**: I used 5-fold cross-validation with GridSearchCV to evaluate parameter combinations:
+   - **n_estimators = 100**: Provided sufficient ensemble diversity without overfitting
+   - **max_depth = 10**: Controlled tree depth to prevent overfitting while allowing complex pattern recognition
+   - **min_samples_split = 2**: Enabled fine-grained splits to capture detailed relationships in the data
+
+#### Final Model Performance
+
+My final model achieved an MAE of 0.4663 compared to my baseline model's MAE of 0.4747, representing an improvement of 0.0084 points. The small magnitude of improvement highlights the inherent difficulty of predicting subjective ratings and suggests that additional features related to recipe categories, ingredient quality, or user preferences might be necessary for more substantial performance gains.
+
+## Fairness Analysis
+
+For my fairness analysis, I split the recipes into two groups based on saturated fat content: Low Saturated Fat and High Saturated Fat. I designated low saturated fat recipes as those with prop_sat_fat <= 0.1 and high saturated fat recipes as those with prop_sat_fat > 0.1. I chose to evaluate the Mean Absolute Error (MAE) parity of the model for the two groups because MAE directly measures prediction accuracy for regression tasks. Since my model predicts continuous rating values, MAE is the most appropriate fairness metric to assess whether the model performs equally well across different recipe types. Unequal performance could lead to biased recipe recommendations, where certain types of recipes (high vs. low saturated fat) are systematically over or under-estimated in their predicted ratings.
+
+**Null Hypothesis**: My model is fair. Its MAE for low saturated fat recipes and high saturated fat recipes are roughly the same, and any differences are due to random chance.
+
+**Alternative Hypothesis**: My model is unfair. Its MAE differs significantly between low and high saturated fat recipe groups.
+
+**Test Statistic**: Difference in MAE (High saturated fat - Low saturated fat)
+
+**Significance Level**: 0.05
+
+#### Results:
+
+**Low saturated fat group**: 8,259 recipes with MAE = 0.4689
+**High saturated fat group**: 11,993 recipes with MAE = 0.4646
+**Observed difference**: -0.0043
+**P-value**: 0.73900
+
+#### Conclusion
+
+With a p-value of **0.739**, which is much greater than our significance level of 0.05, I found no significant evidence of unfairness in my model. The small observed difference of -0.0043 in MAE between groups appears to be due to random chance rather than systematic bias. This suggests that my model performs equally well on both low and high saturated fat recipes.
