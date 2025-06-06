@@ -135,4 +135,54 @@ The cleaned dataframe ended up with 234426 rows and 27 columns, with 83629 uniqu
 | millionaire pound cake                | 286009 |         5.0 |    878.3 |     49.14 |          24.6  |          0.50  |         0.25  |
 | 2000 meatloaf                         | 475785 |         5.0 |    267.0 |     23.40 |           9.6  |          0.41  |         0.32  |
 
+### Univariate Analysis
 
+<iframe
+  src="assets/sat-fat-ratio-dist.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+The saturated to total fat ratio is heavily skewed toward lower values, with the majority of recipes having ratios between 0.1-0.5, and a peak around 0.15. This suggests that most recipes in the dataset contain relatively moderate amounts of saturated fat compared to their total fat content, with very few recipes having extremely high saturated fat ratios (above 0.6), which could indicate healthier fat profiles overall.
+
+### Bivariate Analysis
+
+<iframe
+  src="total-fat_vs_mean-rating.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+There appears to be a positive relationship between total fat content and ratings, with higher-rated recipes (4-5 stars) containing more total fat on average. However, this apparent trend could be attributed to the heavily skewed distribution of ratings in the dataset, where there are significantly more high-rated recipes than low-rated ones, making it difficult to draw reliable conclusions about the true relationship.
+
+To generate a more representative sample and eliminate rating bias, I implemented a balanced sampling approach that takes an equal number of recipes (1000) from each rating category (1-5 stars). This process iterates through each rating level, samples the specified number of recipes randomly from each group, and concatenates them into a single balanced dataset where each rating is equally represented.
+
+<iframe
+  src="assets/total-fat_vs_mean-rating-balanced.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+The balanced sample reveals a more nuanced relationship where the association between total fat and ratings is less pronounced and more evenly distributed across rating levels. This suggests that the strong positive relationship observed in the original data was indeed largely due to the rating imbalance, and that total fat content alone may not be as strong a predictor of recipe ratings as initially appeared.
+
+### Interesting Aggregates
+
+For this section, I investigated the relationship between recipe complexity (number of steps) and the proportion of saturated fat in recipes. I created a pivot table by grouping recipes based on their number of preparation steps and calculating summary statistics (mean, median, minimum, and maximum) for the proportion of saturated fat within each group. The first 10 steps are displayed below.
+
+|   n_steps |   mean |   median |   min |   max |
+|----------:|-------:|---------:|------:|------:|
+|         1 |   0.10 |     0.06 |   0.0 |  0.73 |
+|         2 |   0.11 |     0.07 |   0.0 |  0.73 |
+|         3 |   0.12 |     0.08 |   0.0 |  0.81 |
+|         4 |   0.13 |     0.09 |   0.0 |  0.75 |
+|         5 |   0.14 |     0.11 |   0.0 |  0.85 |
+|         6 |   0.14 |     0.12 |   0.0 |  0.85 |
+|         7 |   0.15 |     0.12 |   0.0 |  0.81 |
+|         8 |   0.15 |     0.13 |   0.0 |  0.90 |
+|         9 |   0.15 |     0.13 |   0.0 |  0.69 |
+|        10 |   0.16 |     0.14 |   0.0 |  0.68 |
+
+The pivot table reveals a clear positive relationship between recipe complexity and saturated fat content. As recipes progress from simple 1-step preparations to more complex 10-step processes, both the mean and median proportion of saturated fat consistently increase from 0.10/0.06 to 0.16/0.14 respectively. This pattern suggests that more elaborate cooking techniques tend to incorporate higher amounts of saturated fats, likely through the use of ingredients like butter, cream, or oil-intensive preparation methods that require multiple steps to properly integrate into the dish.
+
+## Assessment of Missingness
