@@ -163,7 +163,6 @@ To generate a more representative sample and eliminate rating bias, I implemente
   height="600"
   frameborder="0"
 ></iframe>
-
 The balanced sample reveals a more nuanced relationship where the association between total fat and ratings is less pronounced and more evenly distributed across rating levels. This suggests that the strong positive relationship observed in the original data was indeed largely due to the rating imbalance, and that total fat content alone may not be as strong a predictor of recipe ratings as initially appeared.
 
 ### Interesting Aggregates
@@ -215,8 +214,7 @@ To test these hypotheses, I conducted a permutation test by randomly shuffling t
   height="600"
   frameborder="0"
 ></iframe>
-
-The observed statistic of **0.00497** is marked by the red vertical line on the graph. The p-value for this test is **0.0100**, which is below the significance level of 0.05. Therefore, we reject the null hypothesis and conclude that the missingness of the 'rating' column is likely dependent on the proportion of saturated fat (`'prop_sat_fat'`).
+The observed statistic of **0.00497** is marked by the red vertical line on the graph. The p-value for this test is **0.0100**, which is below the significance level of 0.05. Therefore, we have sufficient evidence to reject the null hypothesis.
 
 #### Minutes and Rating
 
@@ -236,10 +234,66 @@ To test these hypotheses, I conducted a permutation test by randomly shuffling t
   height="600"
   frameborder="0"
 ></iframe>
-
-The observed statistic of **86.57040** is marked by the red vertical line on the graph. The p-value for this test is **0.0660**, which is above the significance level of 0.05. Therefore, we do not reject the null hypothesis and conclude that the missingness of the 'rating' column is likely independent from cooking time (`'minutes`).
+The observed statistic of **86.57040** is marked by the red vertical line on the graph. The p-value for this test is **0.0660**, which is above the significance level of 0.05. Therefore, we do not sufficient evidence to reject the null hypothesis. 
 
 ## Hypothesis Testing
 
+As mentioned in the introduction, I am investigating whether people rate high saturated fat recipes and low saturated fat recipes on the same scale. By high saturated fat recipes, I am referring to ecipes with a proportion of saturated fat higher than 0.10 (10% of total calories). This threshold aligns with the Dietary Guidelines for Americans, which recommends limiting saturated fat to 10% or less of daily calories. Proportion of saturated fat is referring to the values in `'prop_sat_fat'`, which are the proportion of saturated fat in calories out of the total calories of the recipe.
+To investigate the question, I ran a permutation test with the following hypotheses, test statistic, and significance level.
 
+**Null Hypothesis**: People rate all recipes on the same scale regardless of saturated fat content.
 
+**Alternative Hypothesis**: People rate high saturated fat recipes higher than low saturated fat recipes.
+
+**Test Statistic**: The difference in mean between rating of high saturated fat recipes and low saturated fat recipes.
+
+**Significance Level**: 0.05
+
+The reason U chose to run a permutation test is because I do not have any information about the population distribution, and I want to check if the two distributions look like they come from the same population. I proposed that people rate high saturated fat recipes higher because such recipes often contain rich, indulgent ingredients like butter, cream, and cheese that enhance flavor and palatability, potentially leading to higher ratings. For the test statistic, I chose the difference in mean of the ratings of two groups of recipes instead of absolute difference in mean. This is because I have a directional hypothesis, which is that people rate high saturated fat recipes higher than other recipes. By looking at the difference in mean between the two groups, I can see what type of recipes typically have a higher rating, which answers my question.
+
+To run the test, I first split the data points into two groups: high saturated fat recipes (proportion of saturated fat > 0.10) and low saturated fat recipes (proportion of saturated fat ≤ 0.10). The observed statistic is **0.01360**.
+
+Then I shuffled the ratings for 1000 times to collect 1000 simulating mean differences in the two distributions as described in the test statistic. I got a p-value of 0.00000.
+Since the p-value is less than **0.05**, I reject the null hypothesis. There is statistically significant evidence suggesting that recipes higher in saturated fat tend to receive higher ratings than recipes lower in saturated fat.
+
+<iframe
+  src="assets/hypothesis_test_plot.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+## Framing a Prediction Problem
+
+I plan to predict the average rating of a recipe, which would be a regression problem since I am predicting a continuous numerical value (`'mean_rating'`) that can range from 1.0 to 5.0. The response variable is `'mean_rating'`, which represents the average of all user ratings for a given recipe.
+
+I chose the average rating as the response variable because it provides a comprehensive measure of recipe quality and user satisfaction. To evaluate the model, I will use Mean Absolute Error (MAE) as the primary metric. MAE is appropriate because it provides an interpretable measure of how far off the predictions are on average (e.g., 'the model predicts ratings within 0.3 points on average'). 
+
+**Time of Prediction Considerations**: At the time of prediction, I would know all recipe characteristics including nutritional information (`'saturated_fat'`), recipe complexity ('`n_steps'`), cooking time, ingredients, and other recipe metadata. However, I would not know any user-generated content such as individual ratings, reviews, or review dates, since these only exist after users have tried the recipe. This justifies my choice to use only recipe-intrinsic features like `'saturated_fat'` and `'n_steps rather'` than any rating-derived or user-generated features.
+
+The model uses `'saturated_fat'` (nutritional content) and `'n_steps'` (recipe complexity) as features, both of which would be available at recipe publication time, making this a realistic prediction scenario for a recipe platform wanting to estimate how well a new recipe might be received before any user ratings are collected.
+
+## Baseline Model
+
+#### Model Description
+
+The baseline model is a Random Forest Regressor designed to predict the average rating of recipes (`'mean_rating'`) using recipe characteristics available at the time of recipe publication.
+
+#### Features
+
+The model uses 2 features, both of which are quantitative:
+1. `'saturated_fat'` (Quantitative): The amount of saturated fat in grams contained in the recipe.
+2. `'n_steps'` (Quantitative): The number of preparation steps required to complete the recipe.
+
+Feature Type Breakdown:
+
+Quantitative features: 2 (`'saturated_fat'`, `'n_steps'`)
+Ordinal features: 0
+Nominal features: 0
+
+#### Encodings and Preprocessing
+Since both features are quantitative, no categorical encoding was necessary. The preprocessing pipeline includes:
+   - SimpleImputer with mean strategy: Handles any missing values by replacing them with the mean of the respective feature
+   - No scaling or transformation: Random Forest algorithms are tree-based and don't require feature scaling
+
+#### Model Performance
+The model achieved a Mean Absolute Error (MAE) of 0.4747 on the test set, meaning the predictions are off by approximately 0.47 rating points on average.
