@@ -1,4 +1,4 @@
-# Are Recipes High in Saturated Fat Rated High?
+# Does Fat Equal Flavor? Analyzing the Impact of Saturated Fat Content on Recipe Ratings
 
 Author: Amy Zhao 
 
