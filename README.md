@@ -197,4 +197,49 @@ The missingness of ratings is likely related to the unobserved rating value itse
 
 I examined the missingness of `'rating'` column by testing the dependency of its missingness. I am investigating whether the missingness in the `'rating'` column depends on the column `'prop_sat_fat'`, which is the proportion of saturated fat out of the total calories, or the column `'minutes'`, which is the cooking time of the recipe.
 
+#### Proportion of Saturated Fat and Rating
+
+**Null Hypothesis**: The missingness of ratings is independent of the recipe’s proportion of saturated fat.
+
+**Alternative Hypothesis**: The missingness of ratings depends on the recipe’s proportion of saturated fat.
+
+**Test Statistic**: The absolute difference in the mean `'prop_sat_fat'` between recipes with and without missing ratings.
+
+**Significance Level**: 0.05
+
+To test these hypotheses, I conducted a permutation test by randomly shuffling the missingness labels in the 'rating' column 1,000 times. This generated 1,000 simulated distributions of absolute mean differences under the null hypothesis.
+
+<iframe
+  src="assets/permutation-rating-missingness-prop-sat-fat.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+The observed statistic of **0.00497** is marked by the red vertical line on the graph. The p-value for this test is **0.0100**, which is below the significance level of 0.05. Therefore, we reject the null hypothesis and conclude that the missingness of the 'rating' column is likely dependent on the proportion of saturated fat (`'prop_sat_fat'`).
+
+#### Minutes and Rating
+
+**Null Hypothesis**: The missingness of ratings is independent of the recipe’s cooking time (minutes).
+
+**Alternative Hypothesis**: The missingness of ratings depends on the recipe’s cooking time (minutes).
+
+**Test Statistic**: The absolute difference in the mean cooking time ('minutes') between recipes with and without missing ratings.
+
+**Significance Level**: 0.05
+
+To test these hypotheses, I conducted a permutation test by randomly shuffling the missingness labels in the 'rating' column 1,000 times. This generated 1,000 simulated distributions of absolute mean differences under the null hypothesis.
+
+<iframe
+  src="assets/permutation-rating-missingness-minutes.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+The observed statistic of **86.57040** is marked by the red vertical line on the graph. The p-value for this test is **0.0660**, which is above the significance level of 0.05. Therefore, we do not reject the null hypothesis and conclude that the missingness of the 'rating' column is likely independent from cooking time (`'minutes`).
+
+## Hypothesis Testing
+
+
 
